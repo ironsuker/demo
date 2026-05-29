@@ -451,36 +451,6 @@ input{
   </div>
 </section>
 
-<section class="slide">
-  <h2>Think Further</h2>
-  <div class="thinkbox">
-    <p style="font-size:27px;margin-top:0"><b>Can we factorise this expression?</b></p>
-    <div class="mathbox">\[
-      2x^2+14x+20
-    \]</div>
-    <div style="text-align:center;margin-top:18px">
-      <button class="btn" onclick="show('ext1')">Hint 1: Look for a common factor</button>
-      <button class="btn secondary" onclick="show('ext2')">Hint 2: Factorise inside the brackets</button>
-      <button class="btn good" onclick="show('ext3')">Show final answer</button>
-    </div>
-    <div id="ext1" class="reveal">
-      <div class="lightmath" style="margin-top:16px">\[
-        2x^2+14x+20=2(x^2+7x+10)
-      \]</div>
-    </div>
-    <div id="ext2" class="reveal">
-      <div class="lightmath" style="margin-top:16px">\[
-        x^2+7x+10=(x+5)(x+2)
-      \]</div>
-    </div>
-    <div id="ext3" class="reveal">
-      <div class="lightmath" style="margin-top:16px">\[
-        2x^2+14x+20=2(x+5)(x+2)
-      \]</div>
-    </div>
-  </div>
-  <p class="small" style="text-align:center;margin-top:16px">First take out the common factor, then use the sum-product pattern.</p>
-</section>
 
 <section class="slide">
   <h2>Worked Example 1</h2>
@@ -498,7 +468,34 @@ input{
 </section>
 
 <section class="slide">
-  <h2>Worked Example 2: Mixed Signs</h2>
+  <h2>Worked Example 2: Both Numbers Negative</h2>
+  <div class="mathbox">Factorise: \(x^2-8x+12\)</div>
+  <div class="card" style="margin-top:20px">
+    <p>We need two numbers whose <b>sum is \(-8\)</b> and <b>product is \(12\)</b>.</p>
+    <div style="text-align:center">
+      <button class="btn" onclick="show('nn1')">Analyse signs</button>
+      <button class="btn secondary" onclick="show('nn2')">Find the numbers</button>
+      <button class="btn good" onclick="show('nn3')">Show answer</button>
+    </div>
+    <div id="nn1" class="reveal">
+      <p class="note">Product is positive → same sign. Sum is negative → both numbers are negative.</p>
+    </div>
+    <div id="nn2" class="reveal">
+      <div class="lightmath">\[
+      -2+(-6)=-8,\quad (-2)(-6)=12
+      \]</div>
+    </div>
+    <div id="nn3" class="reveal">
+      <div class="lightmath">\[
+      x^2-8x+12=(x-2)(x-6)
+      \]</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <h2>Worked Example 3: Mixed Signs</h2>
   <div class="mathbox">Factorise: \(x^2-6x-16\)</div>
   <div class="card" style="margin-top:20px">
     <p>We need two numbers whose <b>sum is \(-6\)</b> and <b>product is \(-16\)</b>.</p>
@@ -532,6 +529,38 @@ input{
   </div>
   <div id="pairfb" class="feedback"></div>
 </section>
+
+<section class="slide">
+  <h2>Think Further</h2>
+  <div class="thinkbox">
+    <p style="font-size:27px;margin-top:0"><b>Can we factorise this expression?</b></p>
+    <div class="mathbox">\[
+      2x^2+14x+20
+    \]</div>
+    <div style="text-align:center;margin-top:18px">
+      <button class="btn" onclick="show('ext1')">Hint 1: Look for a common factor</button>
+      <button class="btn secondary" onclick="show('ext2')">Hint 2: Factorise inside the brackets</button>
+      <button class="btn good" onclick="show('ext3')">Show final answer</button>
+    </div>
+    <div id="ext1" class="reveal">
+      <div class="lightmath" style="margin-top:16px">\[
+        2x^2+14x+20=2(x^2+7x+10)
+      \]</div>
+    </div>
+    <div id="ext2" class="reveal">
+      <div class="lightmath" style="margin-top:16px">\[
+        x^2+7x+10=(x+5)(x+2)
+      \]</div>
+    </div>
+    <div id="ext3" class="reveal">
+      <div class="lightmath" style="margin-top:16px">\[
+        2x^2+14x+20=2(x+5)(x+2)
+      \]</div>
+    </div>
+  </div>
+  <p class="small" style="text-align:center;margin-top:16px">First take out the common factor, then use the sum-product pattern.</p>
+</section>
+
 
 <section class="slide">
   <h2>Student Practice</h2>
@@ -575,7 +604,7 @@ input{
 
 <div class="controls">
   <button class="navbtn" onclick="prevSlide()">‹</button>
-  <div class="progress"><span id="cur">1</span>/<span id="total">14</span></div>
+  <div class="progress"><span id="cur">1</span>/<span id="total">16</span></div>
   <button class="navbtn" onclick="nextSlide()">›</button>
   <button class="btn ghost" onclick="resetReveals()">Reset slide</button>
 </div>
