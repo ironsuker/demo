@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>From Expansion to Factorisation | Bridge Class Demo</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root{
+  --bg:#f6f7fb;
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --brand:#5b6ee1;
+  --brand2:#00a7a7;
+  --accent:#ffb84d;
+  --danger:#e85d75;
+  --good:#2e9d62;
+  --card:#ffffff;
+  --line:#e5e7eb;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  background:linear-gradient(135deg,#eef2ff 0%,#f7fbff 45%,#fff7ed 100%);
+  color:var(--ink);
+}
+.deck{
+  width:100vw;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+}
+.slide{
+  display:none;
+  width:min(1180px,96vw);
+  min-height: min(690px, 88vh);
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:28px;
+  box-shadow:0 24px 70px rgba(31,41,55,.18);
+  padding:42px 52px;
+  position:relative;
+  overflow:hidden;
+}
+.slide.active{display:block; animation:fade .28s ease}
+@keyframes fade{from{opacity:.45; transform:translateY(8px)}to{opacity:1; transform:translateY(0)}}
+.slide::before{
+  content:"";
+  position:absolute;
+  width:300px;height:300px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(91,110,225,.16),rgba(91,110,225,0));
+  right:-80px;top:-90px;
+}
+.slide::after{
+  content:"Bridge Class Demo";
+  position:absolute;right:34px;bottom:22px;
+  color:#a3a9bd;font-size:14px;letter-spacing:.08em;
+}
+h1{font-size:56px;margin:34px 0 16px;line-height:1.08}
+h2{font-size:42px;margin:0 0 24px;line-height:1.15}
+h3{font-size:27px;margin:18px 0 12px}
+p,li{font-size:24px;line-height:1.55}
+.small{font-size:18px;color:var(--muted)}
+.subtitle{font-size:27px;color:#4b5563;margin-bottom:24px}
+.tag{
+  display:inline-flex;gap:8px;align-items:center;
+  background:#eef2ff;color:#3949ab;
+  padding:8px 14px;border-radius:999px;
+  font-weight:700;margin-right:10px;margin-bottom:10px;
+}
+.grid{display:grid;gap:20px}
+.grid2{grid-template-columns:1fr 1fr}
+.grid3{grid-template-columns:repeat(3,1fr)}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 8px 24px rgba(31,41,55,.07);
+}
+.mathbox{
+  background:#111827;
+  color:white;
+  border-radius:20px;
+  padding:22px 26px;
+  font-size:30px;
+  text-align:center;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.lightmath{
+  background:#f8fafc;
+  border:2px dashed #c7d2fe;
+  color:#111827;
+  border-radius:20px;
+  padding:18px 22px;
+  font-size:30px;
+  text-align:center;
+}
+.bigq{
+  font-size:34px;
+  padding:26px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#eef2ff,#ecfeff);
+  border:1px solid #dbeafe;
+}
+.btn{
+  border:none;border-radius:16px;
+  padding:13px 20px;
+  background:var(--brand);
+  color:white;font-weight:800;
+  font-size:18px;cursor:pointer;
+  box-shadow:0 8px 18px rgba(91,110,225,.25);
+  margin:6px;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.secondary{background:#475569}
+.btn.ghost{background:#f3f4f6;color:#111827;box-shadow:none;border:1px solid #e5e7eb}
+.btn.good{background:var(--good)}
+.btn.danger{background:var(--danger)}
+.reveal{display:none}
+.reveal.show{display:block; animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+.controls{
+  position:fixed;
+  left:50%;bottom:18px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.85);
+  border:1px solid rgba(229,231,235,.9);
+  box-shadow:0 10px 30px rgba(31,41,55,.14);
+  padding:10px 14px;border-radius:999px;
+  backdrop-filter:blur(10px);
+  z-index:50;
+}
+.navbtn{
+  width:42px;height:42px;border-radius:50%;border:none;
+  background:#111827;color:white;font-size:20px;cursor:pointer;
+}
+.progress{font-size:15px;color:#4b5563;min-width:70px;text-align:center}
+.timer{
+  position:absolute;left:32px;bottom:22px;
+  font-size:14px;color:#9ca3af;
+}
+.teacher{
+  position:absolute;left:32px;top:22px;
+  color:#9ca3af;font-size:14px;
+}
+.table{
+  width:100%;border-collapse:collapse;font-size:21px;background:white;border-radius:16px;overflow:hidden;
+}
+.table th{background:#eef2ff;color:#374151}
+.table th,.table td{border:1px solid #e5e7eb;padding:12px 14px;text-align:center}
+.slot{
+  display:inline-block;
+  min-width:74px;
+  padding:8px 12px;
+  border-radius:14px;
+  background:#fff7ed;
+  border:2px solid #fed7aa;
+  color:#9a3412;
+  font-weight:900;
+}
+.inputrow{
+  display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;
+  margin-top:18px;
+}
+input{
+  font-size:22px;padding:10px 12px;border-radius:12px;border:1px solid #cbd5e1;
+  width:90px;text-align:center;
+}
+.feedback{font-size:22px;font-weight:800;margin-top:15px;text-align:center}
+.goodtext{color:var(--good)}
+.badtext{color:var(--danger)}
+.timeline{
+  display:flex;gap:10px;align-items:center;justify-content:center;margin:28px 0;
+}
+.step{
+  padding:14px 18px;border-radius:16px;background:#f3f4f6;font-weight:800;font-size:20px;
+}
+.arrow{font-size:30px;color:#64748b}
+.highlight{color:var(--brand);font-weight:900}
+.orange{color:#d97706;font-weight:900}
+.green{color:#059669;font-weight:900}
+.note{
+  background:#fff7ed;border-left:8px solid var(--accent);
+  padding:16px 20px;border-radius:14px;font-size:21px;line-height:1.5;
+}
+.speaker{
+  background:#f8fafc;border-left:6px solid var(--brand2);
+  padding:14px 18px;border-radius:14px;margin-top:12px;color:#334155;font-size:18px;line-height:1.5;
+}
+.choice{
+  display:inline-flex;
+  align-items:center;justify-content:center;
+  width:76px;height:52px;
+  border-radius:16px;background:#fff;border:2px solid #cbd5e1;
+  font-size:24px;font-weight:900;cursor:pointer;margin:6px;
+}
+.choice:hover{border-color:var(--brand);background:#eef2ff}
+.choice.selected{background:#dbeafe;border-color:var(--brand);color:#1d4ed8}
+.mini{font-size:16px;color:#64748b}
+.print{
+  position:fixed;right:18px;top:18px;z-index:60;
+  background:#ffffffcc;border:1px solid #e5e7eb;border-radius:999px;padding:10px 14px;
+  cursor:pointer;color:#374151;font-weight:700;
+}
+@media print{
+  .controls,.print{display:none}
+  .deck{display:block;padding:0}
+  .slide{display:block;page-break-after:always;width:100%;height:auto;min-height:95vh;box-shadow:none;border:none;border-radius:0}
+}
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.quick-card{
+  padding:14px 18px;
+}
+.quick-card .lightmath{
+  font-size:26px;
+  padding:12px 16px;
+}
+.quick-card .inputrow{
+  margin-top:8px;
+}
+.quick-card input{
+  font-size:18px;
+  padding:7px 8px;
+  width:76px;
+}
+.quick-card .btn{
+  font-size:16px;
+  padding:9px 14px;
+}
+.quick-card .feedback{
+  font-size:18px;
+  margin-top:6px;
+}
+.thinkbox{
+  background:linear-gradient(135deg,#fff7ed,#fefce8);
+  border:2px solid #fed7aa;
+  border-radius:22px;
+  padding:22px;
+}
+
+</style>
+</head>
+<body>
+<button class="print" onclick="window.print()">Print / Save PDF</button>
+<div class="deck">
+
+<section class="slide active">
+  <div class="teacher">容闳桥梁班双语数学试讲 | Demo Lesson</div>
+  <h1>From Expanding Brackets<br>to Factorisation</h1>
+  <p class="subtitle">从展开括号到因式分解：先正向展开，再反向还原</p>
+  <div>
+    <span class="tag">Bridge Class</span>
+    <span class="tag">Bilingual Maths</span>
+    <span class="tag">IGCSE Preparation</span>
+  </div>
+  <div class="bigq" style="margin-top:38px">
+    Inquiry Question:<br>
+    <b>How can we use patterns in expansion to reverse the process?</b>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Lesson Roadmap</h2>
+  <div class="timeline">
+    <div class="step">1. Expand</div><div class="arrow">→</div>
+    <div class="step">2. Practise</div><div class="arrow">→</div>
+    <div class="step">3. Notice Pattern</div><div class="arrow">→</div>
+    <div class="step">4. Reverse</div><div class="arrow">→</div>
+    <div class="step">5. Factorise</div>
+  </div>
+  <div class="grid grid2">
+    <div class="card">
+      <h3>Learning objectives</h3>
+      <ul>
+        <li>Expand \((x+p)(x+q)\) quickly.</li>
+        <li>Identify <b>sum</b> and <b>product</b> patterns.</li>
+        <li>Reverse expansion to factorise \(x^2+bx+c\).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Key vocabulary</h3>
+      <p><b>expand</b> 展开<br><b>factorise</b> 因式分解<br><b>coefficient</b> 系数<br><b>constant term</b> 常数项<br><b>sum / product</b> 和 / 积</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Part 1 — Start from Expansion</h2>
+  <p>We already know how to expand brackets. Let’s start with:</p>
+  <div class="mathbox">\((x+2)(x+9)\)</div>
+  <div style="text-align:center;margin-top:20px">
+    <button class="btn" onclick="show('exp1')">Show expansion</button>
+  </div>
+  <div id="exp1" class="reveal">
+    <div class="lightmath" style="margin-top:18px">
+      \[
+      (x+2)(x+9)=x^2+9x+2x+18=x^2+11x+18
+      \]
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Part 2 — Discover the Fast Method</h2>
+  <div class="grid grid2">
+    <div class="card">
+      <h3>Example</h3>
+      <div class="lightmath">\((x+2)(x+9)\)</div>
+      <div class="inputrow">
+        <span>Sum:</span><span class="slot">2+9=11</span>
+        <span>Product:</span><span class="slot">2×9=18</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Result</h3>
+      <div class="lightmath">\(x^2+11x+18\)</div>
+      <p style="font-size:23px">The <span class="highlight">coefficient of \(x\)</span> comes from the <span class="orange">sum</span>.</p>
+      <p style="font-size:23px">The <span class="highlight">constant term</span> comes from the <span class="green">product</span>.</p>
+    </div>
+  </div>
+  <div class="note" style="margin-top:22px">
+    中文点睛：一次项系数来自两个常数的<strong>和</strong>，常数项来自两个常数的<strong>积</strong>。
+  </div>
+</section>
+
+<section class="slide">
+  <h2>General Rule for Expansion</h2>
+  <p>If we expand \((x+p)(x+q)\):</p>
+  <div class="mathbox">
+    \[
+    (x+p)(x+q)=x^2+qx+px+pq=x^2+(p+q)x+pq
+    \]
+  </div>
+  <div class="grid grid2" style="margin-top:22px">
+    <div class="card">
+      <h3>Coefficient of \(x\)</h3>
+      <p class="lightmath">\(p+q\)</p>
+      <p class="small">sum of the two constants</p>
+    </div>
+    <div class="card">
+      <h3>Constant term</h3>
+      <p class="lightmath">\(pq\)</p>
+      <p class="small">product of the two constants</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Quick Practice: Expand</h2>
+  <p style="font-size:22px;margin-top:-8px">Use the fast method. Find the sum and product.</p>
+  <div class="quick-grid">
+    <div class="card quick-card">
+      <div class="lightmath">\((x+6)(x+12)=x^2+\_\_x+\_\_\)</div>
+      <div class="inputrow">
+        <span>sum:</span><input id="e1a" placeholder="?">
+        <span>product:</span><input id="e1b" placeholder="?">
+        <button class="btn" onclick="checkExpand('e1a','e1b',18,72,'fb1')">Check</button>
+      </div>
+      <div id="fb1" class="feedback"></div>
+    </div>
+
+    <div class="card quick-card">
+      <div class="lightmath">\((x+4)(x-13)=x^2+\_\_x+\_\_\)</div>
+      <div class="inputrow">
+        <span>sum:</span><input id="e2a" placeholder="?">
+        <span>product:</span><input id="e2b" placeholder="?">
+        <button class="btn" onclick="checkExpand('e2a','e2b',-9,-52,'fb2')">Check</button>
+      </div>
+      <div id="fb2" class="feedback"></div>
+    </div>
+
+    <div class="card quick-card">
+      <div class="lightmath">\((x-2)(x-5)=x^2+\_\_x+\_\_\)</div>
+      <div class="inputrow">
+        <span>sum:</span><input id="e3a" placeholder="?">
+        <span>product:</span><input id="e3b" placeholder="?">
+        <button class="btn" onclick="checkExpand('e3a','e3b',-7,10,'fb3')">Check</button>
+      </div>
+      <div id="fb3" class="feedback"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>What Pattern Do You Notice?</h2>
+  <table class="table">
+    <tr><th>Brackets</th><th>Sum</th><th>Product</th><th>Expanded Form</th></tr>
+    <tr><td>\((x+2)(x+9)\)</td><td>\(11\)</td><td>\(18\)</td><td>\(x^2+11x+18\)</td></tr>
+    <tr><td>\((x+6)(x+12)\)</td><td>\(18\)</td><td>\(72\)</td><td>\(x^2+18x+72\)</td></tr>
+    <tr><td>\((x+4)(x-13)\)</td><td>\(-9\)</td><td>\(-52\)</td><td>\(x^2-9x-52\)</td></tr>
+      <tr><td>\((x-2)(x-5)\)</td><td>\(-7\)</td><td>\(10\)</td><td>\(x^2-7x+10\)</td></tr>
+</table>
+</section>
+
+<section class="slide">
+  <h2>Part 3 — Reverse the Process</h2>
+  <div class="grid grid2">
+    <div class="card">
+      <h3>Expansion</h3>
+      <div class="lightmath">\((x+6)(x+12)=x^2+18x+72\)</div>
+    </div>
+    <div class="card">
+      <h3>Factorisation</h3>
+      <div class="lightmath">\(x^2+18x+72=(x+6)(x+12)\)</div>
+    </div>
+  </div>
+  <div class="bigq" style="margin-top:28px">
+    <b>Expansion</b> removes brackets.<br>
+    <b>Factorisation</b> puts brackets back.
+  </div>
+  <div class="note" style="margin-top:18px">
+    中文：因式分解就是把展开结果重新写成括号相乘的形式。
+  </div>
+</section>
+
+<section class="slide">
+  <h2>How to Factorise \(x^2+bx+c\)</h2>
+  <p>We reverse the expansion rule.</p>
+  <div class="mathbox">
+    \[
+    x^2+bx+c=(x+p)(x+q)
+    \]
+  </div>
+  <div class="grid grid2" style="margin-top:22px">
+    <div class="card">
+      <h3>Need 1</h3>
+      <div class="lightmath">\(p+q=b\)</div>
+      <p class="small">sum equals the coefficient of \(x\)</p>
+    </div>
+    <div class="card">
+      <h3>Need 2</h3>
+      <div class="lightmath">\(pq=c\)</div>
+      <p class="small">product equals the constant term</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <h2>Worked Example 1</h2>
+  <div class="mathbox">Factorise: \(x^2+7x+12\)</div>
+  <div style="text-align:center;margin-top:20px">
+    <button class="btn" onclick="show('w1')">Step 1: What do we need?</button>
+    <button class="btn secondary" onclick="show('w2')">Step 2: Find the numbers</button>
+    <button class="btn good" onclick="show('w3')">Step 3: Write answer</button>
+  </div>
+  <div id="w1" class="reveal"><div class="lightmath" style="margin-top:18px">Need two numbers: sum \(=7\), product \(=12\).</div></div>
+  <div id="w2" class="reveal"><div class="lightmath" style="margin-top:18px">\(3+4=7,\quad 3\times4=12\)</div></div>
+  <div id="w3" class="reveal"><div class="lightmath" style="margin-top:18px">\[
+  x^2+7x+12=(x+3)(x+4)
+  \]</div></div>
+</section>
+
+<section class="slide">
+  <h2>Worked Example 2: Both Numbers Negative</h2>
+  <div class="mathbox">Factorise: \(x^2-8x+12\)</div>
+  <div class="card" style="margin-top:20px">
+    <p>We need two numbers whose <b>sum is \(-8\)</b> and <b>product is \(12\)</b>.</p>
+    <div style="text-align:center">
+      <button class="btn" onclick="show('nn1')">Analyse signs</button>
+      <button class="btn secondary" onclick="show('nn2')">Find the numbers</button>
+      <button class="btn good" onclick="show('nn3')">Show answer</button>
+    </div>
+    <div id="nn1" class="reveal">
+      <p class="note">Product is positive → same sign. Sum is negative → both numbers are negative.</p>
+    </div>
+    <div id="nn2" class="reveal">
+      <div class="lightmath">\[
+      -2+(-6)=-8,\quad (-2)(-6)=12
+      \]</div>
+    </div>
+    <div id="nn3" class="reveal">
+      <div class="lightmath">\[
+      x^2-8x+12=(x-2)(x-6)
+      \]</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <h2>Worked Example 3: Mixed Signs</h2>
+  <div class="mathbox">Factorise: \(x^2-6x-16\)</div>
+  <div class="card" style="margin-top:20px">
+    <p>We need two numbers whose <b>sum is \(-6\)</b> and <b>product is \(-16\)</b>.</p>
+    <div style="text-align:center">
+      <button class="btn" onclick="show('neg1')">Analyse signs</button>
+      <button class="btn good" onclick="show('neg2')">Show answer</button>
+    </div>
+    <div id="neg1" class="reveal">
+      <p class="note">Product is negative → opposite signs. Sum is negative → the negative number has the larger absolute value.</p>
+    </div>
+    <div id="neg2" class="reveal">
+      <div class="lightmath">\[
+      -8+2=-6,\quad (-8)(2)=-16
+      \]
+      \[
+      x^2-6x-16=(x-8)(x+2)
+      \]</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Interactive Check: Choose the Pair</h2>
+  <div class="mathbox">Factorise: \(x^2+14x+24\)</div>
+  <p style="text-align:center">Choose two numbers whose sum is \(14\) and product is \(24\).</p>
+  <div style="text-align:center">
+    <button class="choice" onclick="choosePair(this,false,'pairfb')">3, 8</button>
+    <button class="choice" onclick="choosePair(this,true,'pairfb')">2, 12</button>
+    <button class="choice" onclick="choosePair(this,false,'pairfb')">4, 6</button>
+    <button class="choice" onclick="choosePair(this,false,'pairfb')">1, 24</button>
+  </div>
+  <div id="pairfb" class="feedback"></div>
+</section>
+
+<section class="slide">
+  <h2>Think Further</h2>
+  <div class="thinkbox">
+    <p style="font-size:27px;margin-top:0"><b>Can we factorise this expression?</b></p>
+    <div class="mathbox">\[
+      2x^2+14x+20
+    \]</div>
+    <div style="text-align:center;margin-top:18px">
+      <button class="btn" onclick="show('ext1')">Hint 1: Look for a common factor</button>
+      <button class="btn secondary" onclick="show('ext2')">Hint 2: Factorise inside the brackets</button>
+      <button class="btn good" onclick="show('ext3')">Show final answer</button>
+    </div>
+    <div id="ext1" class="reveal">
+      <div class="lightmath" style="margin-top:16px">\[
+        2x^2+14x+20=2(x^2+7x+10)
+      \]</div>
+    </div>
+    <div id="ext2" class="reveal">
+      <div class="lightmath" style="margin-top:16px">\[
+        x^2+7x+10=(x+5)(x+2)
+      \]</div>
+    </div>
+    <div id="ext3" class="reveal">
+      <div class="lightmath" style="margin-top:16px">\[
+        2x^2+14x+20=2(x+5)(x+2)
+      \]</div>
+    </div>
+  </div>
+  <p class="small" style="text-align:center;margin-top:16px">First take out the common factor, then use the sum-product pattern.</p>
+</section>
+
+
+<section class="slide">
+  <h2>Student Practice</h2>
+  <div class="grid grid3">
+    <div class="card">
+      <h3>Basic</h3>
+      <div class="lightmath">\(x^2+3x+2\)</div>
+      <p class="small">sum = 3, product = 2</p>
+    </div>
+    <div class="card">
+      <h3>Standard</h3>
+      <div class="lightmath">\(x^2-8x+12\)</div>
+      <p class="small">sum = -8, product = 12</p>
+    </div>
+    <div class="card">
+      <h3>Challenge</h3>
+      <div class="lightmath">\(x^2+13x+42\)</div>
+      <p class="small">sum = 13, product = 42</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Exit Ticket</h2>
+  <p>Complete the rule:</p>
+  <div class="mathbox">\[
+  x^2+bx+c=(x+p)(x+q)
+  \]</div>
+  <div class="inputrow">
+    <span>\(p+q=\)</span><input id="exit1" placeholder="?">
+    <span>\(pq=\)</span><input id="exit2" placeholder="?">
+    <button class="btn" onclick="checkExit()">Check</button>
+  </div>
+  <div id="exitfb" class="feedback"></div>
+  <div class="note" style="margin-top:22px">
+    Summary: Expansion uses the sum-product pattern. Factorisation reverses the process.
+  </div>
+</section>
+
+</div>
+
+<div class="controls">
+  <button class="navbtn" onclick="prevSlide()">‹</button>
+  <div class="progress"><span id="cur">1</span>/<span id="total">16</span></div>
+  <button class="navbtn" onclick="nextSlide()">›</button>
+  <button class="btn ghost" onclick="resetReveals()">Reset slide</button>
+</div>
+
+<script>
+let slides=[...document.querySelectorAll('.slide')];
+let idx=0;
+document.getElementById('total').textContent=slides.length;
+function update(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===idx));
+  document.getElementById('cur').textContent=idx+1;
+  if(window.MathJax){MathJax.typesetPromise([slides[idx]]);}
+}
+function nextSlide(){ if(idx<slides.length-1){idx++;update();}}
+function prevSlide(){ if(idx>0){idx--;update();}}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){nextSlide();}
+  if(e.key==='ArrowLeft'){prevSlide();}
+});
+function show(id){
+  const el=document.getElementById(id);
+  if(el){el.classList.add('show'); if(window.MathJax){MathJax.typesetPromise([el]);}}
+}
+function resetReveals(){
+  slides[idx].querySelectorAll('.reveal').forEach(el=>el.classList.remove('show'));
+  slides[idx].querySelectorAll('.feedback').forEach(el=>el.textContent='');
+  slides[idx].querySelectorAll('input').forEach(el=>el.value='');
+  slides[idx].querySelectorAll('.choice').forEach(el=>el.classList.remove('selected'));
+}
+function norm(v){return String(v).replace(/\s/g,'').toLowerCase();}
+function formatQuad(a,b){
+  let mid = a === 0 ? '' : (a > 0 ? '+'+a+'x' : a+'x');
+  let last = b === 0 ? '' : (b > 0 ? '+'+b : b);
+  return 'x^2'+mid+last;
+}
+function checkExpand(a,b,aa,bb,fb){
+  const va=Number(document.getElementById(a).value);
+  const vb=Number(document.getElementById(b).value);
+  const out=document.getElementById(fb);
+  if(va===aa && vb===bb){
+    out.innerHTML='<span class="goodtext">Correct! The expanded form is \\('+formatQuad(aa,bb)+'\\).</span>';
+  }else{
+    out.innerHTML='<span class="badtext">Try again. Remember: coefficient = sum, constant = product.</span>';
+  }
+  if(window.MathJax){MathJax.typesetPromise([out]);}
+}
+function choosePair(btn,correct,fb){
+  btn.parentElement.querySelectorAll('.choice').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const out=document.getElementById(fb);
+  if(correct){
+    out.innerHTML='<span class="goodtext">Correct! \\(2+12=14\\), \\(2\\times12=24\\), so \\(x^2+14x+24=(x+2)(x+12)\\).</span>';
+  }else{
+    out.innerHTML='<span class="badtext">Not quite. Check both the sum and the product.</span>';
+  }
+  if(window.MathJax){MathJax.typesetPromise([out]);}
+}
+function checkExit(){
+  const a=norm(document.getElementById('exit1').value);
+  const b=norm(document.getElementById('exit2').value);
+  const out=document.getElementById('exitfb');
+  if(a==='b' && b==='c'){
+    out.innerHTML='<span class="goodtext">Correct! \\(p+q=b\\) and \\(pq=c\\).</span>';
+  }else{
+    out.innerHTML='<span class="badtext">Hint: sum gives coefficient of \\(x\\); product gives constant term.</span>';
+  }
+  if(window.MathJax){MathJax.typesetPromise([out]);}
+}
+update();
+</script>
+</body>
+</html>
